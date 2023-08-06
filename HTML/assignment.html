@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Train Seat Reservation</title>
+  <style>
+    /* Define styles for seats */
+    .seat {
+      width: 50px;
+      height: 50px;
+      border: 1px solid black;
+      margin: 5px;
+      text-align: center;
+      line-height: 50px;
+    }
+    .available {
+      background-color: lightgreen;
+    }
+    .booked {
+      background-color: lightgray;
+    }
+  </style>
+</head>
+<body>
+  <h1>Train Seat Reservation</h1>
+  <label for="numSeats">Enter the number of seats to reserve (1 to 7): </label>
+  <input type="number" id="numSeats" min="1" max="7">
+  <button onclick="reserveSeats()">Reserve Seats</button>
+  <div id="coach">
+    <!-- Generate seat grid dynamically -->
+  </div>
+
+  <script>
+    const totalSeats = 80;
+    const seatsInRow = 7;
+    const lastRowSeats = 3;
+
+    let bookedSeats = [];
+
+    // Function to generate the seat grid
+    function generateSeatGrid() {
+      const coachDiv = document.getElementById("coach");
+      coachDiv.innerHTML = "";
+
+      for (let row = 1; row <= Math.ceil(totalSeats / seatsInRow); row++) {
+        const rowDiv = document.createElement("div");
+        rowDiv.classList.add("row");
+
+        for (let seat = 1; seat <= (row === Math.ceil(totalSeats / seatsInRow) ? lastRowSeats : seatsInRow); seat++) {
+          const seatNumber = (row - 1) * seatsInRow + seat;
+          const seatDiv = document.createElement("div");
+          seatDiv.classList.add("seat");
+          seatDiv.dataset.seatNumber = seatNumber;
+
+          if (bookedSeats.includes(seatNumber)) {
+            seatDiv.classList.add("booked");
+          } else {
+            seatDiv.classList.add("available");
+          }
+
+          seatDiv.innerText = seatNumber;
+          rowDiv.appendChild(seatDiv);
+        }
+        coachDiv.appendChild(rowDiv);
+      }
+    }
+
+    // Function to handle seat reservation
+    function reserveSeats() {
+      const numSeatsToReserve = parseInt(document.getElementById("numSeats").value);
+      if (numSeatsToReserve < 1 || numSeatsToReserve > 7) {
+        alert("Please enter a valid number of seats to reserve (1 to 7).");
+        return;
+      }
+
+      let availableSeats = [];
+      for (let i = 1; i <= totalSeats; i++) {
+        if (!bookedSeats.includes(i)) {
+          availableSeats.push(i);
+        }
+      }
+
+      if (availableSeats.length < numSeatsToReserve) {
+        alert("Not enough seats available.");
+        return;
+      }
+
+      const reservedSeats = availableSeats.slice(0, numSeatsToReserve);
+      bookedSeats = bookedSeats.concat(reservedSeats);
+
+      generateSeatGrid();
+      alert(`You have successfully reserved seats: ${reservedSeats.join(", ")}`);
+    }
+
+    // Initialize the seat grid on page load
+    generateSeatGrid();
+  </script>
+</body>
+</html>
